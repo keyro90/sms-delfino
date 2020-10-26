@@ -1,0 +1,5 @@
+
+venv/Lib/site-packages/__pycache__/
+venv/
+errors.txt
+.idea/

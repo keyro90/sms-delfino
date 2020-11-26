@@ -1,22 +1,33 @@
+import json
+
 import requests
 
 
-def send_message(num: str):
+def send_message(num: str, message: str):
     url = "https://rest.clicksend.com/v3/sms/send"
-    payload = "{\n  \"messages\": [\n    {\n      \"body\":\"ASD IL DELFINO E' ONLINE\\n Aderendo a questa iniziativa il tuo abbonamento resta attivo.\\n Per conferma scrivi SI ai seguenti numeri\\n Chiara 3409342799\\n Yero 3464954075\\n\",\n      \"to\": \""+num+"\",\n      \"from\": \"IlDelfino\"\n    }\n  ]\n} "
+    payload = {
+        "messages" : [
+            {
+                "body" : message,
+                "from" : "IlDelfino",
+                "to" : num
+            }
+        ]
+    }
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Basic YW5kcmVhdGdpdXN0aUBnbWFpbC5jb206NUFBQThDRUYtNjA5RS02MDE5LTkyODUtRTBGQzE5RTc4RURG'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
 
     return response.status_code
 
 
 already_sent = []
 failed = open('errors.txt', 'w')
-with open('numbers2.txt', 'r') as f:
+message_to_send = open('message_struttura').read()
+with open('numbers3.txt', 'r') as f:
     for line in f:
         line = line.strip()
         if len(line) != 10:
@@ -26,7 +37,7 @@ with open('numbers2.txt', 'r') as f:
             print(f'Number {line} already sent.')
             continue
         print(f'Sending to {line}')
-        res = send_message(line)
+        res = send_message(line, message_to_send)
         if res != 200:
             print(f'Send to Number {line} failed.')
             failed.write(f'{line}\r\n')
